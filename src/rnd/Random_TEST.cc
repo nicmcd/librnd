@@ -36,16 +36,16 @@
 
 #include <vector>
 
-#include "rng/Random.h"
+#include "rnd/Random.h"
 
 
 TEST(Random, seed) {
   const u64 kRands = 1000;
 
   // initialize a bunch of Random objects
-  std::vector<rng::Random*> rands;
+  std::vector<rnd::Random*> rands;
   for (u64 i = 0; i < kRands; i++) {
-    rands.push_back(new rng::Random((i+1) << 32));
+    rands.push_back(new rnd::Random((i+1) << 32));
   }
 
   // get the first value of each random
@@ -73,7 +73,7 @@ TEST(Random, u64) {
   const u64 kBkts = 1000;
   const u64 kRounds = 10000000;
   std::vector<u64> buckets(kBkts, 0);
-  rng::Random rand(0xDEADBEEF12345678lu);
+  rnd::Random rand(0xDEADBEEF12345678lu);
 
   for (u64 r = 0; r < kRounds; r++) {
     u64 value = rand.nextF64(0, kBkts);
@@ -104,7 +104,7 @@ TEST(Random, f64) {
   const u64 kBkts = 1000;
   const u64 kRounds = 10000000;
   std::vector<u64> buckets(kBkts, 0);
-  rng::Random rand(0xDEADBEEF12345678lu);
+  rnd::Random rand(0xDEADBEEF12345678lu);
 
   for (u64 r = 0; r < kRounds; r++) {
     f64 value = rand.nextF64(0, 1000);
@@ -143,7 +143,7 @@ TEST(Random, bool) {
       seed = (seed << 8) | byte;
     }
 
-    rng::Random rand(seed);
+    rnd::Random rand(seed);
 
     u64 count = 0;
     for (u64 r = 0; r < kRounds; r++) {

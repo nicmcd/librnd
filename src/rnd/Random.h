@@ -28,58 +28,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "rng/Random.h"
+#ifndef RND_RANDOM_H_
+#define RND_RANDOM_H_
 
-#include <cassert>
+#include <prim/prim.h>
 
-namespace rng {
+#include <random>
 
-Random::Random() {}
+namespace rnd {
 
-Random::Random(u64 _seed) {
-  this->seed(_seed);
-}
+class Random {
+ public:
+  Random();
+  explicit Random(u64 _seed);
+  ~Random();
+  void seed(u64 _seed);
+  u64 nextU64();
+  u64 nextU64(u64 _min, u64 _max);
+  f64 nextF64();
+  f64 nextF64(f64 _min, f64 _max);  // _max is exclusive
+  bool nextBool();
 
-Random::~Random() {}
+ private:
+  std::mt19937_64 prng_;
+  std::uniform_int_distribution<u64> intDist_;  // this defaults to [0,2^64-1]
+  std::uniform_real_distribution<f64> realDist_;  // this defaults to [0,1)
+};
 
-void Random::seed(u64 _seed) {
-  std::seed_seq seq = {(u32)((_seed >> 32) & 0xFFFFFFFFlu),
-                       (u32)((_seed >>  0) & 0xFFFFFFFFlu)};
-  prng_.seed(seq);
-}
+}  // namespace rnd
 
-u64 Random::nextU64() {
-  return intDist_(prng_);
-}
-
-u64 Random::nextU64(u64 _min, u64 _max) {
-  assert(_max >= _min);
-  if (_min == _max) {
-    return _min;
-  }
-  u64 rand = intDist_(prng_);
-  u64 span = _max - _min;
-  if (span == U64_MAX) {
-    return rand;
-  } else {
-    return (rand % (span + 1)) + _min;
-  }
-}
-
-f64 Random::nextF64() {
-  return realDist_(prng_);
-}
-
-f64 Random::nextF64(f64 _min, f64 _max) {
-  assert(_max >= _min);
-  f64 r = realDist_(prng_);
-  r *= (_max - _min);
-  r += _min;
-  return r;
-}
-
-bool Random::nextBool() {
-  return static_cast<bool>(intDist_(prng_) & 0x1);
-}
-
-}  // namespace rng
+#endif  // RND_RANDOM_H_

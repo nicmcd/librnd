@@ -28,33 +28,41 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef RNG_RANDOM_H_
-#define RNG_RANDOM_H_
+#ifndef RND_SET_H_
+#define RND_SET_H_
 
 #include <prim/prim.h>
 
+#include <cstddef>
+
 #include <random>
+#include <set>
+#include <vector>
 
-namespace rng {
+namespace rnd {
 
-class Random {
+template <typename T>
+class Set {
  public:
-  Random();
-  explicit Random(u64 _seed);
-  ~Random();
+  Set();
+  explicit Set(u64 _seed);
+  ~Set();
   void seed(u64 _seed);
-  u64 nextU64();
-  u64 nextU64(u64 _min, u64 _max);
-  f64 nextF64();
-  f64 nextF64(f64 _min, f64 _max);  // _max is exclusive
-  bool nextBool();
+  void addSequence(T _start, T _stop);  // triggers reordering
+  void addSet(const std::set<T>& _values);  // triggers reordering
+  void clear();
+  u64 size() const;
+  T peek();  // undefined if empty
+  T pop();  // undefined if empty
+  u64 remove(T _item, u64 _max = U64_MAX);
 
  private:
   std::mt19937_64 prng_;
-  std::uniform_int_distribution<u64> intDist_;  // this defaults to [0,2^64-1]
-  std::uniform_real_distribution<f64> realDist_;  // this defaults to [0,1)
+  std::vector<T> values_;
 };
 
-}  // namespace rng
+}  // namespace rnd
 
-#endif  // RNG_RANDOM_H_
+#include "rnd/Set.tcc"
+
+#endif  // RND_SET_H_
