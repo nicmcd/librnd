@@ -1,5 +1,5 @@
 #--------------------- Basic Settings -----------------------------------------#
-PROGRAM_NAME  := rng
+PROGRAM_NAME  := rnd
 BINARY_BASE   := bin
 BUILD_BASE    := bld
 INCLUDE_BASE  := inc
