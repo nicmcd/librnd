@@ -105,7 +105,7 @@ template <typename T>
 u64 Set<T>::remove(T _item, u64 _max) {
   u64 count = 0;
   for (auto it = values_.begin();
-       it != values_.end() && count < U64_MAX;
+       it != values_.end() && count < _max;
        ++it) {
     if (_item == *it) {
       values_.erase(it);
