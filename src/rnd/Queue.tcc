@@ -28,91 +28,81 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef RND_SET_H_
+#ifndef RND_QUEUE_H_
 #error "Do not include this .tcc file directly, use the .h file instead"
 #else
 
 #include <algorithm>
+#include <iterator>
 #include <set>
+#include <vector>
 
 namespace rnd {
 
 template <typename T>
-Set<T>::Set() {}
+Queue<T>::Queue(Random* _random)
+    : random_(_random) {}
 
 template <typename T>
-Set<T>::Set(u64 _seed) {
-  seed(_seed);
+Queue<T>::~Queue() {}
+
+template <typename T>
+void Queue<T>::add(T _item) {
+  values_.insert(_item);
 }
 
 template <typename T>
-Set<T>::~Set() {}
-
-template <typename T>
-void Set<T>::seed(u64 _seed) {
-  std::seed_seq seq = {(u32)((_seed >> 32) & 0xFFFFFFFFlu),
-                       (u32)((_seed >>  0) & 0xFFFFFFFFlu)};
-  prng_.seed(seq);
-}
-
-template <typename T>
-void Set<T>::addSequence(T _start, T _stop) {
+void Queue<T>::add(T _start, T _stop) {
   if (_stop >= _start) {
     T current = _start;
     while (true) {
       bool last = (current == _stop);
-      values_.push_back(current);
+      values_.insert(current);
       current++;
       if (last) {
         break;
       }
     }
-    std::shuffle(values_.begin(), values_.end(), prng_);
   }
 }
 
 template <typename T>
-void Set<T>::addSet(const std::set<T>& _values) {
+void Queue<T>::add(const std::vector<T>& _values) {
   for (auto it = _values.cbegin(); it != _values.cend(); ++it) {
-    values_.push_back(*it);
+    values_.insert(*it);
   }
-  std::shuffle(values_.begin(), values_.end(), prng_);
 }
 
 template <typename T>
-void Set<T>::clear() {
+void Queue<T>::add(const std::set<T>& _values) {
+  for (auto it = _values.cbegin(); it != _values.cend(); ++it) {
+    values_.insert(*it);
+  }
+}
+
+template <typename T>
+void Queue<T>::clear() {
   values_.clear();
 }
 
 template <typename T>
-size_t Set<T>::size() const {
+size_t Queue<T>::size() const {
   return values_.size();
 }
 
 template <typename T>
-T Set<T>::peek() {
-  return values_.back();
+T Queue<T>::pop() {
+  u64 idx = random_->nextU64(0, values_.size() - 1);
+  auto it = values_.begin();
+  std::advance(it, idx);
+  T val = *it;
+  values_.erase(it);
+  return val;
 }
 
 template <typename T>
-T Set<T>::pop() {
-  T back = values_.back();
-  values_.pop_back();
-  return back;
-}
-
-template <typename T>
-u64 Set<T>::remove(T _item, u64 _max) {
-  u64 count = 0;
-  for (auto it = values_.begin();
-       it != values_.end() && count < _max;
-       ++it) {
-    if (_item == *it) {
-      values_.erase(it);
-      count++;
-    }
-  }
-  return count;
+u64 Queue<T>::erase(T _item) {
+  return values_.erase(_item);
 }
 
 }  // namespace rnd

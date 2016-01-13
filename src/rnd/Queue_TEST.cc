@@ -33,50 +33,54 @@
 
 #include <set>
 
-#include "rnd/Set.h"
+#include "rnd/Queue.h"
+#include "rnd/Random.h"
 
-TEST(Set, u8Full) {
+TEST(Queue, u8Full) {
+  rnd::Random rand(1234);
   bool debug = false;
-  rnd::Set<u8> rs;
-  rs.addSequence(0, 255);
-  ASSERT_EQ(rs.size(), 256u);
+  rnd::Queue<u8> rq(&rand);
+  rq.add(0, 255);
+  ASSERT_EQ(rq.size(), 256u);
   std::set<u8> set;
-  for (u64 i = 0; rs.size() > 0; i++) {
-    u8 val = rs.pop();
+  for (u64 i = 0; rq.size() > 0; i++) {
+    u8 val = rq.pop();
     ASSERT_TRUE(set.insert(val).second);
     if (debug) {
       printf("%lu -> %u\n", i, val);
     }
   }
   ASSERT_EQ(set.size(), 256u);
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, s8Full) {
+TEST(Queue, s8Full) {
+  rnd::Random rand(1234);
   bool debug = false;
-  rnd::Set<s8> rs;
-  rs.addSequence(-128, 127);
-  ASSERT_EQ(rs.size(), 256u);
+  rnd::Queue<s8> rq(&rand);
+  rq.add(-128, 127);
+  ASSERT_EQ(rq.size(), 256u);
   std::set<s8> set;
-  for (u64 i = 0; rs.size() > 0; i++) {
-    s8 val = rs.pop();
+  for (u64 i = 0; rq.size() > 0; i++) {
+    s8 val = rq.pop();
     ASSERT_TRUE(set.insert(val).second);
     if (debug) {
       printf("%lu -> %u\n", i, val);
     }
   }
   ASSERT_EQ(set.size(), 256u);
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, u8Partial) {
+TEST(Queue, u8Partial) {
+  rnd::Random rand(1234);
   bool debug = false;
-  rnd::Set<u8> rs;
-  rs.addSequence(64, 64 + 127);
-  ASSERT_EQ(rs.size(), 128u);
+  rnd::Queue<u8> rq(&rand);
+  rq.add(64, 64 + 127);
+  ASSERT_EQ(rq.size(), 128u);
   std::set<u8> set;
-  for (u64 i = 0; rs.size() > 0; i++) {
-    u8 val = rs.pop();
+  for (u64 i = 0; rq.size() > 0; i++) {
+    u8 val = rq.pop();
     ASSERT_GE(val, 64u);
     ASSERT_LE(val, 64u + 127u);
     ASSERT_TRUE(set.insert(val).second);
@@ -85,17 +89,18 @@ TEST(Set, u8Partial) {
     }
   }
   ASSERT_EQ(set.size(), 128u);
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, s8Partial) {
+TEST(Queue, s8Partial) {
+  rnd::Random rand(1234);
   bool debug = false;
-  rnd::Set<s8> rs;
-  rs.addSequence(-120, -21);
-  ASSERT_EQ(rs.size(), 100u);
+  rnd::Queue<s8> rq(&rand);
+  rq.add(-120, -21);
+  ASSERT_EQ(rq.size(), 100u);
   std::set<s8> set;
-  for (u64 i = 0; rs.size() > 0; i++) {
-    s8 val = rs.pop();
+  for (u64 i = 0; rq.size() > 0; i++) {
+    s8 val = rq.pop();
     ASSERT_GE(val, -120);
     ASSERT_LE(val, -21);
     ASSERT_TRUE(set.insert(val).second);
@@ -104,43 +109,46 @@ TEST(Set, s8Partial) {
     }
   }
   ASSERT_EQ(set.size(), 100u);
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, u16Full) {
+TEST(Queue, u16Full) {
+  rnd::Random rand(1234);
   bool debug = false;
-  rnd::Set<u16> rs;
-  rs.addSequence(0, 65535);
-  ASSERT_EQ(rs.size(), 65536u);
+  rnd::Queue<u16> rq(&rand);
+  rq.add(0, 65535);
+  ASSERT_EQ(rq.size(), 65536u);
   std::set<u16> set;
-  for (u64 i = 0; rs.size() > 0; i++) {
-    u16 val = rs.pop();
+  for (u64 i = 0; rq.size() > 0; i++) {
+    u16 val = rq.pop();
     ASSERT_TRUE(set.insert(val).second);
     if (debug) {
       printf("%lu -> %u\n", i, val);
     }
   }
   ASSERT_EQ(set.size(), 65536u);
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, u32Single) {
-  rnd::Set<u32> rs;
-  rs.addSequence(1000, 1000);
-  ASSERT_EQ(rs.size(), 1u);
-  u32 val = rs.pop();
+TEST(Queue, u32Single) {
+  rnd::Random rand(1234);
+  rnd::Queue<u32> rq(&rand);
+  rq.add(1000, 1000);
+  ASSERT_EQ(rq.size(), 1u);
+  u32 val = rq.pop();
   ASSERT_EQ(val, 1000u);
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, u64Partial) {
+TEST(Queue, u64Partial) {
+  rnd::Random rand(1234);
   bool debug = false;
-  rnd::Set<u64> rs;
-  rs.addSequence(0xA00000000, 0xA00000FFF);
-  ASSERT_EQ(rs.size(), 4096u);
+  rnd::Queue<u64> rq(&rand);
+  rq.add(0xA00000000, 0xA00000FFF);
+  ASSERT_EQ(rq.size(), 4096u);
   std::set<u64> set;
-  for (u64 i = 0; rs.size() > 0; i++) {
-    u64 val = rs.pop();
+  for (u64 i = 0; rq.size() > 0; i++) {
+    u64 val = rq.pop();
     ASSERT_GE(val, 0xA00000000u);
     ASSERT_LE(val, 0xA00000FFFu);
     ASSERT_TRUE(set.insert(val).second);
@@ -149,46 +157,84 @@ TEST(Set, u64Partial) {
     }
   }
   ASSERT_EQ(set.size(), 4096u);
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, s64Partial) {
+TEST(Queue, s64Partial) {
+  rnd::Random rand(1234);
   bool debug = false;
-  rnd::Set<s64> rs;
-  rs.addSequence(-100000, 99999);
-  ASSERT_EQ(rs.size(), 200000u);
+  rnd::Queue<s64> rq(&rand);
+  rq.add(-10000, 9999);
+  ASSERT_EQ(rq.size(), 20000u);
   std::set<s64> set;
-  for (u64 i = 0; rs.size() > 0; i++) {
-    s64 val = rs.pop();
-    ASSERT_GE(val, -100000);
-    ASSERT_LE(val, 99999);
+  for (u64 i = 0; rq.size() > 0; i++) {
+    s64 val = rq.pop();
+    ASSERT_GE(val, -10000);
+    ASSERT_LE(val, 9999);
     ASSERT_TRUE(set.insert(val).second);
     if (debug) {
       printf("%lu -> %li\n", i, val);
     }
   }
-  ASSERT_EQ(set.size(), 200000u);
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(set.size(), 20000u);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, u32Empty) {
-  rnd::Set<u32> rs;
-  rs.addSequence(1001, 1000);
-  ASSERT_EQ(rs.size(), 0u);
+TEST(Queue, u32Empty) {
+  rnd::Random rand(1234);
+  rnd::Queue<u32> rq(&rand);
+  rq.add(1001, 1000);
+  ASSERT_EQ(rq.size(), 0u);
 }
 
-TEST(Set, addSet) {
-  rnd::Set<u32> rs;
-  rs.addSequence(10, 13);
-  rs.addSet(std::set<u32>({14, 15, 16}));
-  ASSERT_EQ(rs.size(), 7u);
+TEST(Queue, addSet) {
+  rnd::Random rand(1234);
+  rnd::Queue<u32> rq(&rand);
+  rq.add(10, 13);
+  rq.add(std::set<u32>({14, 15, 16}));
+  ASSERT_EQ(rq.size(), 7u);
   std::set<u32> exp({10, 11, 12, 13, 14, 15, 16});
-  while (rs.size() > 0) {
+  while (rq.size() > 0) {
     ASSERT_GT(exp.size(), 0u);
-    u32 cur = rs.pop();
+    u32 cur = rq.pop();
     ASSERT_EQ(exp.count(cur), 1u);
     exp.erase(cur);
   }
-  ASSERT_EQ(rs.size(), 0u);
+  ASSERT_EQ(rq.size(), 0u);
+  ASSERT_EQ(exp.size(), 0u);
+}
+
+TEST(Queue, addVector) {
+  rnd::Random rand(1234);
+  rnd::Queue<u32> rq(&rand);
+  rq.add(10, 13);
+  rq.add(std::vector<u32>({14, 15, 16}));
+  ASSERT_EQ(rq.size(), 7u);
+  std::set<u32> exp({10, 11, 12, 13, 14, 15, 16});
+  while (rq.size() > 0) {
+    ASSERT_GT(exp.size(), 0u);
+    u32 cur = rq.pop();
+    ASSERT_EQ(exp.count(cur), 1u);
+    exp.erase(cur);
+  }
+  ASSERT_EQ(rq.size(), 0u);
+  ASSERT_EQ(exp.size(), 0u);
+}
+
+TEST(Queue, erase) {
+  rnd::Random rand(1234);
+  rnd::Queue<u32> rq(&rand);
+  rq.add(10, 13);
+  ASSERT_EQ(rq.size(), 4u);
+  std::set<u32> exp({10, 11, 12, 13});
+  while (rq.size() > 0) {
+    ASSERT_GT(exp.size(), 0u);
+    u32 cur = *exp.begin();
+    u32 rmd = rq.erase(cur);
+    ASSERT_EQ(rmd, 1u);
+    ASSERT_EQ(exp.count(cur), 1u);
+    exp.erase(cur);
+  }
+  ASSERT_EQ(rq.size(), 0u);
   ASSERT_EQ(exp.size(), 0u);
 }

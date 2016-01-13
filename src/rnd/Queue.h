@@ -28,8 +28,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef RND_SET_H_
-#define RND_SET_H_
+#ifndef RND_QUEUE_H_
+#define RND_QUEUE_H_
 
 #include <prim/prim.h>
 
@@ -37,32 +37,34 @@
 
 #include <random>
 #include <set>
+#include <unordered_set>
 #include <vector>
+
+#include "rnd/Random.h"
 
 namespace rnd {
 
 template <typename T>
-class Set {
+class Queue {
  public:
-  Set();
-  explicit Set(u64 _seed);
-  ~Set();
-  void seed(u64 _seed);
-  void addSequence(T _start, T _stop);  // triggers reordering
-  void addSet(const std::set<T>& _values);  // triggers reordering
+  explicit Queue(Random* _random);
+  ~Queue();
+  void add(T _item);
+  void add(T _start, T _stop);
+  void add(const std::vector<T>& _values);
+  void add(const std::set<T>& _values);
   void clear();
   u64 size() const;
-  T peek();  // undefined if empty
   T pop();  // undefined if empty
-  u64 remove(T _item, u64 _max = U64_MAX);
+  u64 erase(T _item);
 
  private:
-  std::mt19937_64 prng_;
-  std::vector<T> values_;
+  Random* random_;
+  std::unordered_multiset<T> values_;
 };
 
 }  // namespace rnd
 
-#include "rnd/Set.tcc"
+#include "rnd/Queue.tcc"
 
-#endif  // RND_SET_H_
+#endif  // RND_QUEUE_H_
