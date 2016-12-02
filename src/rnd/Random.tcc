@@ -29,44 +29,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #ifndef RND_RANDOM_H_
-#define RND_RANDOM_H_
+#error "Do not include this .tcc file directly, use the .h file instead"
+#else
 
-#include <prim/prim.h>
-
-#include <random>
+#include <algorithm>
 
 namespace rnd {
 
-class Random {
- public:
-  Random();
-  explicit Random(u64 _seed);
-  ~Random();
-  void seed(u64 _seed);
-  u64 nextU64();
-  u64 nextU64(u64 _min, u64 _max);
-  f64 nextF64();
-  f64 nextF64(f64 _min, f64 _max);  // _max is exclusive
-  bool nextBool();
+template <typename Iterator>
+void Random::shuffle(Iterator _first, Iterator _last) {
+  std::shuffle(_first, _last, prng_);
+}
 
-  // this shuffle the region of a container
-  //  only works with RandomAccessIterators (e.g., vector, deque)
-  template <typename Iterator>
-  void shuffle(Iterator _first, Iterator _last);
-
-  // this shuffle the entire container
-  //  only works with RandomAccessIterators (e.g., vector, deque)
-  template <typename Container>
-  void shuffle(Container* _container);
-
- private:
-  std::mt19937_64 prng_;
-  std::uniform_int_distribution<u64> intDist_;  // this defaults to [0,2^64-1]
-  std::uniform_real_distribution<f64> realDist_;  // this defaults to [0,1)
-};
+template <typename Container>
+void Random::shuffle(Container* _container) {
+  std::shuffle(_container->begin(), _container->end(), prng_);
+}
 
 }  // namespace rnd
-
-#include "rnd/Random.tcc"
 
 #endif  // RND_RANDOM_H_

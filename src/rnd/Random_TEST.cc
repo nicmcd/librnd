@@ -34,6 +34,7 @@
 #include <cmath>
 #include <ctime>
 
+#include <list>
 #include <vector>
 
 #include "rnd/Random.h"
@@ -158,4 +159,68 @@ TEST(Random, bool) {
     // printf("dev %.15f\n", dev);
     ASSERT_LE(dev, 0.0002);
   }
+}
+
+TEST(Random, shuffle) {
+  const u64 kSize = 100;
+  const u64 kRounds = 1000000;
+
+  // make base vector
+  std::vector<u64> a;
+  for (u64 idx = 0; idx < kSize; idx++) {
+    a.push_back(idx);
+  }
+
+  // test seeding reproduces same shuffle
+  rnd::Random rand(123);
+  std::vector<u64> b = a;
+  std::vector<u64> c = a;
+  rand.shuffle(b.begin(), b.end());  // iterator version
+  rand.seed(123);
+  rand.shuffle(&c);  // container version
+  ASSERT_EQ(b, c);
+
+  // generate distribution
+  std::vector<u64> buckets(kSize, 0);
+  for (u32 round = 0; round < kRounds; round++) {
+    // make a copy
+    std::vector<u64> d = a;
+
+    // shuffle it
+    if (round % 2 == 0) {
+      rand.shuffle(d.begin(), d.end());
+    } else {
+      rand.shuffle(&d);
+    }
+
+    // find where element 0 landed
+    bool found = false;
+    for (u64 idx = 0; idx < kSize; idx++) {
+      if (d[idx] == 0) {
+        buckets.at(idx)++;
+        found = true;
+        break;
+      }
+    }
+    ASSERT_TRUE(found);
+  }
+
+  // verify distribution is uniform
+  f64 sum = 0;
+  for (u64 b = 0; b < kSize; b++) {
+    sum += buckets.at(b);
+    // printf("[%lu] = %lu\n", b, buckets.at(b));
+  }
+  f64 mean = sum / kSize;
+  sum = 0;
+  for (u64 b = 0; b < kSize; b++) {
+    f64 c = (static_cast<f64>(buckets.at(b)) - mean);
+    c *= c;
+    sum += c;
+  }
+  f64 stdDev = std::sqrt(sum / kSize);
+  // printf("stdDev = %f\n", stdDev);
+  stdDev /= kRounds;
+  // printf("relStdDev = %f\n", stdDev);
+  ASSERT_LE(stdDev, 0.00015);
 }
