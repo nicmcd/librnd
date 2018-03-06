@@ -59,6 +59,17 @@ class Random {
   template <typename Container>
   void shuffle(Container* _container);
 
+  // this retrieves a random element from the container
+  //  this does not remove the element
+  template <typename Container>
+  const typename Container::value_type& retrieve(const Container* _container);
+
+  // this retrieves a random element from the container
+  //  this removes the element from the container
+  //  the container must support the 'erase' function
+  template <typename Container>
+  typename Container::value_type remove(Container* _container);
+
  private:
   std::mt19937_64 prng_;
   std::uniform_int_distribution<u64> intDist_;  // this defaults to [0,2^64-1]

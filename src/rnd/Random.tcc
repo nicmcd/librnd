@@ -46,6 +46,26 @@ void Random::shuffle(Container* _container) {
   std::shuffle(_container->begin(), _container->end(), prng_);
 }
 
+template <typename Container>
+const typename Container::value_type& Random::retrieve(
+    const Container* _container) {
+  size_t index = nextU64(0, _container->size() - 1);
+  typename Container::const_iterator iter = _container->cbegin();
+  std::advance(iter, index);
+  return *iter;
+}
+
+template <typename Container>
+typename Container::value_type Random::remove(Container* _container) {
+  size_t index = nextU64(0, _container->size() - 1);
+  typename Container::iterator iter = _container->begin();
+  std::advance(iter, index);
+  typename Container::value_type element = *iter;
+  _container->erase(iter);
+  return element;
+}
+
+
 }  // namespace rnd
 
 #endif  // RND_RANDOM_H_

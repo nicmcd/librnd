@@ -34,7 +34,13 @@
 #include <cmath>
 #include <ctime>
 
+#include <deque>
 #include <list>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "rnd/Random.h"
@@ -223,4 +229,98 @@ TEST(Random, shuffle) {
   stdDev /= kRounds;
   // printf("relStdDev = %f\n", stdDev);
   ASSERT_LE(stdDev, 0.00015);
+}
+
+TEST(Random, retrieve) {
+  rnd::Random rnd(12345678);
+
+  const std::set<u32> SVALS({1, 2, 3, 4});
+  const std::set<std::pair<u32, u32> > PVALS(
+      {{1, 1}, {2, 2}, {3, 3}, {4, 4}});
+
+  std::deque<u32> deque({1, 2, 3, 4});
+  std::list<u32> list({1, 2, 3, 4});
+  std::vector<u32> vector({1, 2, 3, 4});
+  std::set<u32> oset({1, 2, 3, 4});
+  std::map<u32, u32> omap({{1, 1}, {2, 2}, {3, 3}, {4, 4}});
+  std::unordered_set<u32> uset({1, 2, 3, 4});
+  std::unordered_map<u32, u32> umap({{1, 1}, {2, 2}, {3, 3}, {4, 4}});
+
+  u32 r;
+  std::pair<u32, u32> p;
+
+  r = rnd.retrieve(&deque);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(deque.size(), 4u);
+
+  r = rnd.retrieve(&list);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(list.size(), 4u);
+
+  r = rnd.retrieve(&vector);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(vector.size(), 4u);
+
+  r = rnd.retrieve(&oset);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(oset.size(), 4u);
+
+  p = rnd.retrieve(&omap);
+  ASSERT_EQ(PVALS.count(p), 1u);
+  ASSERT_EQ(omap.size(), 4u);
+
+  r = rnd.retrieve(&uset);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(uset.size(), 4u);
+
+  p = rnd.retrieve(&umap);
+  ASSERT_EQ(PVALS.count(p), 1u);
+  ASSERT_EQ(umap.size(), 4u);
+}
+
+TEST(Random, remove) {
+  rnd::Random rnd(12345678);
+
+  const std::set<u32> SVALS({1, 2, 3, 4});
+  const std::set<std::pair<u32, u32> > PVALS(
+      {{1, 1}, {2, 2}, {3, 3}, {4, 4}});
+
+  std::deque<u32> deque({1, 2, 3, 4});
+  std::list<u32> list({1, 2, 3, 4});
+  std::vector<u32> vector({1, 2, 3, 4});
+  std::set<u32> oset({1, 2, 3, 4});
+  std::map<u32, u32> omap({{1, 1}, {2, 2}, {3, 3}, {4, 4}});
+  std::unordered_set<u32> uset({1, 2, 3, 4});
+  std::unordered_map<u32, u32> umap({{1, 1}, {2, 2}, {3, 3}, {4, 4}});
+
+  u32 r;
+  std::pair<u32, u32> p;
+
+  r = rnd.remove(&deque);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(deque.size(), 3u);
+
+  r = rnd.remove(&list);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(list.size(), 3u);
+
+  r = rnd.remove(&vector);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(vector.size(), 3u);
+
+  r = rnd.remove(&oset);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(oset.size(), 3u);
+
+  p = rnd.remove(&omap);
+  ASSERT_EQ(PVALS.count(p), 1u);
+  ASSERT_EQ(omap.size(), 3u);
+
+  r = rnd.remove(&uset);
+  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(uset.size(), 3u);
+
+  p = rnd.remove(&umap);
+  ASSERT_EQ(PVALS.count(p), 1u);
+  ASSERT_EQ(umap.size(), 3u);
 }
