@@ -234,8 +234,8 @@ TEST(Random, shuffle) {
 TEST(Random, retrieve) {
   rnd::Random rnd(12345678);
 
-  const std::set<u32> SVALS({1, 2, 3, 4});
-  const std::set<std::pair<u32, u32> > PVALS(
+  const std::set<u32> kSingleVals({1, 2, 3, 4});
+  const std::set<std::pair<u32, u32> > kPairVals(
       {{1, 1}, {2, 2}, {3, 3}, {4, 4}});
 
   std::deque<u32> deque({1, 2, 3, 4});
@@ -250,39 +250,39 @@ TEST(Random, retrieve) {
   std::pair<u32, u32> p;
 
   r = rnd.retrieve(&deque);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(deque.size(), 4u);
 
   r = rnd.retrieve(&list);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(list.size(), 4u);
 
   r = rnd.retrieve(&vector);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(vector.size(), 4u);
 
   r = rnd.retrieve(&oset);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(oset.size(), 4u);
 
   p = rnd.retrieve(&omap);
-  ASSERT_EQ(PVALS.count(p), 1u);
+  ASSERT_EQ(kPairVals.count(p), 1u);
   ASSERT_EQ(omap.size(), 4u);
 
   r = rnd.retrieve(&uset);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(uset.size(), 4u);
 
   p = rnd.retrieve(&umap);
-  ASSERT_EQ(PVALS.count(p), 1u);
+  ASSERT_EQ(kPairVals.count(p), 1u);
   ASSERT_EQ(umap.size(), 4u);
 }
 
 TEST(Random, remove) {
   rnd::Random rnd(12345678);
 
-  const std::set<u32> SVALS({1, 2, 3, 4});
-  const std::set<std::pair<u32, u32> > PVALS(
+  const std::set<u32> kSingleVals({1, 2, 3, 4});
+  const std::set<std::pair<u32, u32> > kPairVals(
       {{1, 1}, {2, 2}, {3, 3}, {4, 4}});
 
   std::deque<u32> deque({1, 2, 3, 4});
@@ -297,30 +297,50 @@ TEST(Random, remove) {
   std::pair<u32, u32> p;
 
   r = rnd.remove(&deque);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(deque.size(), 3u);
 
   r = rnd.remove(&list);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(list.size(), 3u);
 
   r = rnd.remove(&vector);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(vector.size(), 3u);
 
   r = rnd.remove(&oset);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(oset.size(), 3u);
 
   p = rnd.remove(&omap);
-  ASSERT_EQ(PVALS.count(p), 1u);
+  ASSERT_EQ(kPairVals.count(p), 1u);
   ASSERT_EQ(omap.size(), 3u);
 
   r = rnd.remove(&uset);
-  ASSERT_EQ(SVALS.count(r), 1u);
+  ASSERT_EQ(kSingleVals.count(r), 1u);
   ASSERT_EQ(uset.size(), 3u);
 
   p = rnd.remove(&umap);
-  ASSERT_EQ(PVALS.count(p), 1u);
+  ASSERT_EQ(kPairVals.count(p), 1u);
   ASSERT_EQ(umap.size(), 3u);
+}
+
+TEST(Random, removeDist) {
+  rnd::Random rnd(12345678);
+
+  const std::set<u32> kSingleVals({1, 2, 3, 4});
+  std::vector<u32> counts(4, 0);
+
+  const u32 kRounds = 1000000;
+  for (u32 r = 0; r < kRounds; r++) {
+    std::unordered_set<u32> uset({1, 2, 3, 4});
+    u32 v = rnd.remove(&uset);
+    ASSERT_EQ(kSingleVals.count(v), 1u);
+    ASSERT_EQ(uset.size(), 3u);
+    counts.at(v - 1)++;
+  }
+
+  for (u32 c = 0; c < counts.size(); c++) {
+    ASSERT_NEAR(counts.at(c), kRounds / 4.0, 0.001 * kRounds);
+  }
 }
