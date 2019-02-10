@@ -28,9 +28,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef RND_RANDOM_TCC_
+#define RND_RANDOM_TCC_
+
 #ifndef RND_RANDOM_H_
 #error "Do not include this .tcc file directly, use the .h file instead"
-#else
+#else  // RND_RANDOM_H_
 
 #include <algorithm>
 
@@ -65,7 +68,7 @@ typename Container::value_type Random::remove(Container* _container) {
   return element;
 }
 
-
 }  // namespace rnd
 
 #endif  // RND_RANDOM_H_
+#endif  // RND_RANDOM_TCC_

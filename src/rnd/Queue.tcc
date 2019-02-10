@@ -28,9 +28,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef RND_QUEUE_TCC_
+#define RND_QUEUE_TCC_
+
 #ifndef RND_QUEUE_H_
 #error "Do not include this .tcc file directly, use the .h file instead"
-#else
+#else  // RND_QUEUE_H_
 
 #include <algorithm>
 #include <iterator>
@@ -107,4 +110,5 @@ u64 Queue<T>::erase(T _item) {
 
 }  // namespace rnd
 
-#endif  // COMMON_RANDOM_RANDOMSET_H_
+#endif  // RND_QUEUE_H_
+#endif  // RND_QUEUE_TCC_
