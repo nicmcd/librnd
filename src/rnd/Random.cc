@@ -52,6 +52,11 @@ u64 Random::nextU64() {
   return intDist_(prng_);
 }
 
+u64 Random::nextU64(u64 _bits) {
+  assert(_bits > 0 && _bits <= 64);
+  return intDist_(prng_) & ((0x1 << _bits) - 1);
+}
+
 u64 Random::nextU64(u64 _min, u64 _max) {
   assert(_max >= _min);
   if (_min == _max) {

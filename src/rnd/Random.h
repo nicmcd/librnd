@@ -44,6 +44,7 @@ class Random {
   ~Random();
   void seed(u64 _seed);
   u64 nextU64();
+  u64 nextU64(u64 _bits);
   u64 nextU64(u64 _min, u64 _max);
   f64 nextF64();
   f64 nextF64(f64 _min, f64 _max);  // _max is exclusive

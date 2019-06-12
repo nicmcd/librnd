@@ -107,6 +107,41 @@ TEST(Random, u64) {
   ASSERT_LE(stdDev, 0.00009);
 }
 
+TEST(Random, bits_range) {
+  const u64 kTests = 10;
+  const u64 kRounds = 100000;
+  for (u64 test = 0; test < kTests; test++) {
+    u64 seed = 0xDEADBEEF12345678lu + test;
+    for (u32 bits = 1; bits <= 64; bits++) {
+      rnd::Random rand(seed);
+      for (u64 r = 0; r < kRounds; r++) {
+        u64 value = rand.nextU64(bits);
+        ASSERT_LE(value, 0x1 << bits);
+      }
+    }
+  }
+}
+
+TEST(Random, bits_8b_dist) {
+  const u64 kBits = 8;
+  const u64 kTests = 10;
+  const u64 kRounds = 10000000;
+  for (u64 test = 0; test < kTests; test++) {
+    u64 seed = 0xDEADBEEF12345678lu + test;
+    rnd::Random rand(seed);
+    std::vector<u64> counts(0x1 << kBits, 0);
+    for (u64 r = 0; r < kRounds; r++) {
+      u64 value = rand.nextU64(kBits);
+      counts.at(value) += 1;
+    }
+    f64 exp_ratio = (static_cast<f64>(kRounds) / (0x1 << kBits)) / kRounds;
+    for (u64 count : counts) {
+      f64 act_ratio = static_cast<f64>(count) / kRounds;
+      ASSERT_NEAR(act_ratio, exp_ratio, 0.0001);
+    }
+  }
+}
+
 TEST(Random, f64) {
   const u64 kBkts = 1000;
   const u64 kRounds = 10000000;
