@@ -79,32 +79,35 @@ TEST(Random, seed) {
 TEST(Random, u64) {
   const u64 kBkts = 1000;
   const u64 kRounds = 10000000;
-  std::vector<u64> buckets(kBkts, 0);
-  rnd::Random rand(0xDEADBEEF12345678lu);
+  const u64 kTests = 4;
+  for (u64 test = 0; test < kTests; test++) {
+    std::vector<u64> buckets(kBkts, 0);
+    u64 seed = 0xDEADBEEF12345678lu + test;
+    rnd::Random rand(seed);
 
-  for (u64 r = 0; r < kRounds; r++) {
-    u64 value = rand.nextF64(0, kBkts);
-    buckets.at(value)++;
-  }
+    for (u64 r = 0; r < kRounds; r++) {
+      u64 value = rand.nextU64(1234, kBkts + 1234 - 1);
+      buckets.at(value - 1234)++;
+    }
 
-  f64 sum = 0;
-  for (u64 b = 0; b < kBkts; b++) {
-    sum += buckets.at(b);
-    // printf("[%lu] = %lu\n", b, buckets.at(b));
-  }
-  f64 mean = sum / kBkts;
+    f64 sum = 0;
+    for (u64 b = 0; b < kBkts; b++) {
+      sum += buckets.at(b);
+    }
+    f64 mean = sum / kBkts;
 
-  sum = 0;
-  for (u64 b = 0; b < kBkts; b++) {
-    f64 c = (static_cast<f64>(buckets.at(b)) - mean);
-    c *= c;
-    sum += c;
+    sum = 0;
+    for (u64 b = 0; b < kBkts; b++) {
+      f64 c = (static_cast<f64>(buckets.at(b)) - mean);
+      c *= c;
+      sum += c;
+    }
+    f64 stdDev = std::sqrt(sum / kBkts);
+    // printf("stdDev = %f\n", stdDev);
+    stdDev /= kRounds;
+    // printf("relStdDev = %f\n", stdDev);
+    ASSERT_LE(stdDev, 0.00009);
   }
-  f64 stdDev = std::sqrt(sum / kBkts);
-  // printf("stdDev = %f\n", stdDev);
-  stdDev /= kRounds;
-  // printf("relStdDev = %f\n", stdDev);
-  ASSERT_LE(stdDev, 0.00009);
 }
 
 TEST(Random, bits_range) {
