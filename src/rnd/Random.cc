@@ -57,13 +57,17 @@ u64 Random::nextU64(u64 _min, u64 _max) {
   if (_min == _max) {
     return _min;
   }
-  u64 rand = intDist_(prng_);
-  u64 span = _max - _min;
-  if (span == U64_MAX) {
-    return rand;
-  } else {
-    return (rand % (span + 1)) + _min;
+  if ((_max - _min) == U64_MAX) {
+    return intDist_(prng_);
   }
+  u64 span = _max - _min + 1;
+  u64 top = prng_.max() - prng_.max() % span;
+  u64 rand;
+  do {
+    rand = intDist_(prng_);
+  } while (rand >= top);
+  rand %= span;
+  return _min + rand;
 }
 
 f64 Random::nextF64() {

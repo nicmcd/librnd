@@ -28,6 +28,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "rnd/Random.h"
+
 #include <gtest/gtest.h>
 #include <prim/prim.h>
 
@@ -42,8 +44,6 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
-
-#include "rnd/Random.h"
 
 
 TEST(Random, seed) {
