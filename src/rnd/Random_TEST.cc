@@ -174,11 +174,14 @@ TEST(Random, f64) {
 }
 
 TEST(Random, bool) {
-  const u64 kRounds = 100000000;
+  const u64 kTests = 1;
+  const u64 kRounds = 1000000000;
 
-  // use a non-deterministic RNG to seed our deterministic PRNG
-  srand(time(nullptr));
-  for (u64 t = 0; t < 10; t++) {
+  for (u64 test = 0; test < kTests; test++) {
+    // use a non-deterministic RNG to seed our deterministic PRNG
+    srand(time(nullptr));
+
+    // get a seed for the PRNG
     u64 seed = 0;
     for (u64 b = 0; b < sizeof(u64); b++) {
       u64 byte = rand() % 0xFF;  // NOLINT
@@ -198,7 +201,7 @@ TEST(Random, bool) {
     f64 dev = std::abs(0.5 - ratio);
     // printf("ratio %.15f\n", ratio);
     // printf("dev %.15f\n", dev);
-    ASSERT_LE(dev, 0.0002);
+    ASSERT_LE(dev, 0.0001);
   }
 }
 
