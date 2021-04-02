@@ -73,8 +73,8 @@ class Random {
 
  private:
   std::mt19937_64 prng_;
-  std::uniform_int_distribution<u64> intDist_;  // this defaults to [0,2^64-1]
-  std::uniform_real_distribution<f64> realDist_;  // this defaults to [0,1)
+  std::uniform_int_distribution<u64> int_dist_;  // this defaults to [0,2^64-1]
+  std::uniform_real_distribution<f64> real_dist_;  // this defaults to [0,1)
 };
 
 }  // namespace rnd

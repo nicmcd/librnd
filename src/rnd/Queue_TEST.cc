@@ -28,12 +28,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <gtest/gtest.h>
-#include <prim/prim.h>
+#include "rnd/Queue.h"
 
 #include <set>
 
-#include "rnd/Queue.h"
+#include "gtest/gtest.h"
+#include "prim/prim.h"
 #include "rnd/Random.h"
 
 TEST(Queue, u8Full) {

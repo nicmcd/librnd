@@ -30,12 +30,8 @@
  */
 #include "rnd/Random.h"
 
-#include <gtest/gtest.h>
-#include <prim/prim.h>
-
 #include <cmath>
 #include <ctime>
-
 #include <deque>
 #include <list>
 #include <map>
@@ -45,32 +41,34 @@
 #include <utility>
 #include <vector>
 
+#include "gtest/gtest.h"
+#include "prim/prim.h"
 
 TEST(Random, seed) {
   const u64 kRands = 1000;
 
-  // initialize a bunch of Random objects
+  // Initializes a bunch of Random objects.
   std::vector<rnd::Random*> rands;
   for (u64 i = 0; i < kRands; i++) {
-    rands.push_back(new rnd::Random((i+1) << 32));
+    rands.push_back(new rnd::Random((i + 1) << 32));
   }
 
-  // get the first value of each random
+  // Gets the first value of each random.
   std::vector<u64> values;
   for (u64 i = 0; i < kRands; i++) {
     values.push_back(rands[i]->nextU64(0, U64_MAX));
   }
 
-  // re-seed each random, verify the random produces the same value
+  // Re-seeds each random, verifies the random produces the same value.
   for (u64 n = 0; n < 5; n++) {
     for (u64 i = 0; i < kRands; i++) {
-      rands[i]->seed((i+1) << 32);
+      rands[i]->seed((i + 1) << 32);
       u64 value = rands.at(i)->nextU64(0, U64_MAX);
       ASSERT_EQ(value, values.at(i));
     }
   }
 
-  // cleanup the Random objects
+  // Cleans up the Random objects.
   for (u64 i = 0; i < kRands; i++) {
     delete rands[i];
   }
@@ -102,11 +100,9 @@ TEST(Random, u64) {
       c *= c;
       sum += c;
     }
-    f64 stdDev = std::sqrt(sum / kBkts);
-    // printf("stdDev = %f\n", stdDev);
-    stdDev /= kRounds;
-    // printf("relStdDev = %f\n", stdDev);
-    ASSERT_LE(stdDev, 0.00009);
+    f64 std_dev = std::sqrt(sum / kBkts);
+    std_dev /= kRounds;
+    ASSERT_LE(std_dev, 0.00009);
   }
 }
 
@@ -159,7 +155,6 @@ TEST(Random, f64) {
   f64 sum = 0;
   for (u64 b = 0; b < kBkts; b++) {
     sum += buckets.at(b);
-    // printf("[%lu] = %lu\n", b, buckets.at(b));
   }
   f64 mean = sum / kBkts;
 
@@ -169,11 +164,9 @@ TEST(Random, f64) {
     c *= c;
     sum += c;
   }
-  f64 stdDev = std::sqrt(sum / kBkts);
-  // printf("stdDev = %f\n", stdDev);
-  stdDev /= kRounds;
-  // printf("relStdDev = %f\n", stdDev);
-  ASSERT_LE(stdDev, 0.00009);
+  f64 std_dev = std::sqrt(sum / kBkts);
+  std_dev /= kRounds;
+  ASSERT_LE(std_dev, 0.00009);
 }
 
 TEST(Random, bool) {
@@ -181,10 +174,10 @@ TEST(Random, bool) {
   const u64 kRounds = 1000000000;
 
   for (u64 test = 0; test < kTests; test++) {
-    // use a non-deterministic RNG to seed our deterministic PRNG
+    // Uses a non-deterministic RNG to seed our deterministic PRNG.
     srand(time(nullptr));
 
-    // get a seed for the PRNG
+    // Gets a seed for the PRNG.
     u64 seed = 0;
     for (u64 b = 0; b < sizeof(u64); b++) {
       u64 byte = rand() % 0xFF;  // NOLINT
@@ -202,8 +195,6 @@ TEST(Random, bool) {
 
     f64 ratio = static_cast<f64>(count) / kRounds;
     f64 dev = std::abs(0.5 - ratio);
-    // printf("ratio %.15f\n", ratio);
-    // printf("dev %.15f\n", dev);
     ASSERT_LE(dev, 0.0001);
   }
 }
@@ -212,13 +203,13 @@ TEST(Random, shuffle) {
   const u64 kSize = 100;
   const u64 kRounds = 1000000;
 
-  // make base vector
+  // Makes base vector.
   std::vector<u64> a;
   for (u64 idx = 0; idx < kSize; idx++) {
     a.push_back(idx);
   }
 
-  // test seeding reproduces same shuffle
+  // Tests seeding reproduces same shuffle.
   rnd::Random rand(123);
   std::vector<u64> b = a;
   std::vector<u64> c = a;
@@ -227,20 +218,20 @@ TEST(Random, shuffle) {
   rand.shuffle(&c);  // container version
   ASSERT_EQ(b, c);
 
-  // generate distribution
+  // Generates distribution.
   std::vector<u64> buckets(kSize, 0);
   for (u32 round = 0; round < kRounds; round++) {
-    // make a copy
+    // Makes a copy.
     std::vector<u64> d = a;
 
-    // shuffle it
+    // Shuffles the copy.
     if (round % 2 == 0) {
       rand.shuffle(d.begin(), d.end());
     } else {
       rand.shuffle(&d);
     }
 
-    // find where element 0 landed
+    // Finds where element 0 landed.
     bool found = false;
     for (u64 idx = 0; idx < kSize; idx++) {
       if (d[idx] == 0) {
@@ -252,11 +243,10 @@ TEST(Random, shuffle) {
     ASSERT_TRUE(found);
   }
 
-  // verify distribution is uniform
+  // Verifies distribution is uniform.
   f64 sum = 0;
   for (u64 b = 0; b < kSize; b++) {
     sum += buckets.at(b);
-    // printf("[%lu] = %lu\n", b, buckets.at(b));
   }
   f64 mean = sum / kSize;
   sum = 0;
@@ -265,11 +255,9 @@ TEST(Random, shuffle) {
     c *= c;
     sum += c;
   }
-  f64 stdDev = std::sqrt(sum / kSize);
-  // printf("stdDev = %f\n", stdDev);
-  stdDev /= kRounds;
-  // printf("relStdDev = %f\n", stdDev);
-  ASSERT_LE(stdDev, 0.00015);
+  f64 std_dev = std::sqrt(sum / kSize);
+  std_dev /= kRounds;
+  ASSERT_LE(std_dev, 0.00015);
 }
 
 TEST(Random, retrieve) {

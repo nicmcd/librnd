@@ -44,17 +44,17 @@ Random::~Random() {}
 
 void Random::seed(u64 _seed) {
   std::seed_seq seq = {(u32)((_seed >> 32) & 0xFFFFFFFFlu),
-                       (u32)((_seed >>  0) & 0xFFFFFFFFlu)};
+                       (u32)((_seed >> 0) & 0xFFFFFFFFlu)};
   prng_.seed(seq);
 }
 
 u64 Random::nextU64() {
-  return intDist_(prng_);
+  return int_dist_(prng_);
 }
 
 u64 Random::nextU64(u64 _bits) {
   assert(_bits > 0 && _bits <= 64);
-  return intDist_(prng_) & ((0x1 << _bits) - 1);
+  return int_dist_(prng_) & ((0x1 << _bits) - 1);
 }
 
 u64 Random::nextU64(u64 _min, u64 _max) {
@@ -63,32 +63,32 @@ u64 Random::nextU64(u64 _min, u64 _max) {
     return _min;
   }
   if ((_max - _min) == U64_MAX) {
-    return intDist_(prng_);
+    return int_dist_(prng_);
   }
   u64 span = _max - _min + 1;
   u64 top = prng_.max() - prng_.max() % span;
   u64 rand;
   do {
-    rand = intDist_(prng_);
+    rand = int_dist_(prng_);
   } while (rand >= top);
   rand %= span;
   return _min + rand;
 }
 
 f64 Random::nextF64() {
-  return realDist_(prng_);
+  return real_dist_(prng_);
 }
 
 f64 Random::nextF64(f64 _min, f64 _max) {
   assert(_max >= _min);
-  f64 r = realDist_(prng_);
+  f64 r = real_dist_(prng_);
   r *= (_max - _min);
   r += _min;
   return r;
 }
 
 bool Random::nextBool() {
-  return static_cast<bool>(intDist_(prng_) & 0x1);
+  return static_cast<bool>(int_dist_(prng_) & 0x1);
 }
 
 }  // namespace rnd

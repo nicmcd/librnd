@@ -31,15 +31,13 @@
 #ifndef RND_QUEUE_H_
 #define RND_QUEUE_H_
 
-#include <prim/prim.h>
-
 #include <cstddef>
-
 #include <random>
 #include <set>
 #include <unordered_set>
 #include <vector>
 
+#include "prim/prim.h"
 #include "rnd/Random.h"
 
 namespace rnd {

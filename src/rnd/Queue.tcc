@@ -43,8 +43,7 @@
 namespace rnd {
 
 template <typename T>
-Queue<T>::Queue(Random* _random)
-    : random_(_random) {}
+Queue<T>::Queue(Random* _random) : random_(_random) {}
 
 template <typename T>
 Queue<T>::~Queue() {}
