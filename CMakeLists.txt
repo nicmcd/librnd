@@ -15,7 +15,7 @@ find_library(LIBPRIM_A NAMES libprim.a PATHS ${CMAKE_INSTALL_RPATH})
 if(LIBPRIM_A MATCHES "NOTFOUND")
   message(FATAL_ERROR "Bad: ${LIBPRIM_A}")
 endif()
-string(lib/libprim.a include/ LIBPRIM_INC ${LIBPRIM_A})
+string(REPLACE lib/libprim.a include/ LIBPRIM_INC ${LIBPRIM_A})
 add_library(
   rnd
   STATIC
