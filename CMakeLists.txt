@@ -11,12 +11,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #if(NOT EXISTS ${LIBPRIM_DIR}/lib)
 #  message(FATAL_ERROR "${LIBPRIM_DIR}/lib does not exist")
 #endif()
-find_library(LIBPRIM NAMES libprim.a PATHS ${CMAKE_INSTALL_RPATH})
-if(LIBPRIM MATCHES "NOTFOUND")
-  message(FATAL_ERROR "Bad: ${LIBPRIM}")
-else()
-  message(FATAL_ERROR "Good: ${LIBPRIM}")
+find_library(LIBPRIM_A NAMES libprim.a PATHS ${CMAKE_INSTALL_RPATH})
+if(LIBPRIM_A MATCHES "NOTFOUND")
+  message(FATAL_ERROR "Bad: ${LIBPRIM_A}")
 endif()
+string(lib/libprim.a include/ LIBPRIM_INC ${LIBPRIM_A})
 add_library(
   rnd
   STATIC
@@ -36,11 +35,11 @@ target_include_directories(
   rnd
   PUBLIC
   ${PROJECT_SOURCE_DIR}/src
-  ${LIBPRIM_DIR}/include
+  ${LIBPRIM_INC}
   )
 target_link_libraries(
   rnd
-  ${LIBPRIM_DIR}/lib/libprim.a
+  ${LIBPRIM_A}
   )
 include(GNUInstallDirs)
 install(
