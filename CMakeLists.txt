@@ -11,8 +11,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #if(NOT EXISTS ${LIBPRIM_DIR}/lib)
 #  message(FATAL_ERROR "${LIBPRIM_DIR}/lib does not exist")
 #endif()
-find_library(LIBPRIM NAMES libprim)
-message(FATAL_ERROR ${LIBPRIM})
+find_library(LIBPRIM NAMES libprim.a PATHS ${CMAKE_INSTALL_RPATH})
+if(LIBPRIM MATCHES "NOTFOUND")
+  message(FATAL_ERROR "Bad: ${LIBPRIM}")
+else()
+  message(FATAL_ERROR "Good: ${LIBPRIM}")
+endif()
 add_library(
   rnd
   STATIC
