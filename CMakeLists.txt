@@ -1,21 +1,19 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.10)
 project(librnd)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-#if(NOT EXISTS ${LIBPRIM_DIR})
-#  message(FATAL_ERROR "${LIBPRIM_DIR} does not exist")
-#endif()
-#if(NOT EXISTS ${LIBPRIM_DIR}/include)
-#  message(FATAL_ERROR "${LIBPRIM_DIR}/include does not exist")
-#endif()
-#if(NOT EXISTS ${LIBPRIM_DIR}/lib)
-#  message(FATAL_ERROR "${LIBPRIM_DIR}/lib does not exist")
-#endif()
+
+# libprim
 find_library(LIBPRIM_A NAMES libprim.a PATHS ${CMAKE_INSTALL_RPATH})
 if(LIBPRIM_A MATCHES "NOTFOUND")
-  message(FATAL_ERROR "Bad: ${LIBPRIM_A}")
+  message(FATAL_ERROR "libprim.a not found")
 endif()
 string(REPLACE lib/libprim.a include/ LIBPRIM_INC ${LIBPRIM_A})
+if(NOT EXISTS ${LIBPRIM_INC})
+  message(FATAL_ERROR "libprim include dir doesn't exist")
+endif()
+
 add_library(
   rnd
   STATIC
