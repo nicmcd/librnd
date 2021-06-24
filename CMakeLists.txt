@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(librnd)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -11,7 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #if(NOT EXISTS ${LIBPRIM_DIR}/lib)
 #  message(FATAL_ERROR "${LIBPRIM_DIR}/lib does not exist")
 #endif()
-find_library(libprim NAMES libprim)
+find_library(LIBPRIM NAMES libprim)
+message(${LIBPRIM})
 add_library(
   rnd
   STATIC
