@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #  message(FATAL_ERROR "${LIBPRIM_DIR}/lib does not exist")
 #endif()
 find_library(LIBPRIM NAMES libprim)
-message(${LIBPRIM})
+message(FATAL_ERROR ${LIBPRIM})
 add_library(
   rnd
   STATIC
