@@ -1,22 +1,22 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 project(librnd)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+include(FindPkgConfig)
+
 # libprim
-find_library(LIBPRIM_A NAMES libprim.a PATHS ${CMAKE_INSTALL_RPATH})
-if(LIBPRIM_A MATCHES "NOTFOUND")
-  message(FATAL_ERROR "libprim.a not found")
-endif()
-string(REPLACE lib/libprim.a include/ LIBPRIM_INC ${LIBPRIM_A})
-if(NOT EXISTS ${LIBPRIM_INC})
-  message(FATAL_ERROR "libprim include dir doesn't exist")
-endif()
+pkg_check_modules(libprim REQUIRED IMPORTED_TARGET libprim)
+  get_target_property(
+  LIBPRIM_INC
+  PkgConfig::libprim
+  INTERFACE_INCLUDE_DIRECTORIES
+)
 
 add_library(
   rnd
-  STATIC
+  SHARED
   ${PROJECT_SOURCE_DIR}/src/rnd/Random.cc
   ${PROJECT_SOURCE_DIR}/src/rnd/Queue.h
   ${PROJECT_SOURCE_DIR}/src/rnd/Random.h
@@ -29,6 +29,8 @@ set_target_properties(
   PROPERTIES
   LINKER_LANGUAGE
   CXX
+  POSITION_INDEPENDENT_CODE
+  ON
   )
 
 target_include_directories(
@@ -40,7 +42,7 @@ target_include_directories(
 
 target_link_libraries(
   rnd
-  ${LIBPRIM_A}
+  PkgConfig::libprim
   )
 
 include(GNUInstallDirs)
@@ -78,3 +80,14 @@ install(
   rnd
   )
 
+configure_file(
+  ${PROJECT_SOURCE_DIR}/librnd.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/librnd.pc
+  @ONLY
+  )
+install(
+  FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/librnd.pc
+  DESTINATION
+  ${CMAKE_INSTALL_LIBDIR}/pkgconfig/
+  )
